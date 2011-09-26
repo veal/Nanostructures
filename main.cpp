@@ -11,6 +11,7 @@ int main(int argc, char *argv[])
 
     Controller* controller = new LabController();
     w.setCallBackListener(controller);
+    controller->setMainWindow(&w);
     w.show();
 
     return a.exec();

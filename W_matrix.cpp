@@ -1,8 +1,5 @@
 #include "W_matrix.h"
 
-
-#include "PWF.h"
-
 W_matrix::W_matrix(PWF* matrixPWF, PWF* impurityPWF) {
 
     _dBasisWF = new double[4][N_tot];

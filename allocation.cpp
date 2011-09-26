@@ -79,7 +79,6 @@ void allocate() {
     calculateGreen = true;
     calculateSig_fe = false;
     calculate_nm_mm = true;
-
     En_S = -4.7;
     En_E = 0.0;
     Et = 0;
@@ -88,7 +87,6 @@ void allocate() {
     Esmr = 0;
     N = 4.1;
     T = 300;
-    N_f_int, N_start, N_end;
     itmS = 0;
     it_m = 1;
     mm_stop = 0;

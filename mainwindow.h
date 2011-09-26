@@ -2,6 +2,7 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
+#include <QTextStream>
 #include <QtGui/QFileDialog>
 #include "controller.h"
 
@@ -19,6 +20,20 @@ public:
     ~MainWindow();
     QString get_matrixStr();
     QString get_impurityStr();
+
+    void setMatrixLabel(QString);
+    void setMatrixNumOrb(int);
+    void setMatrixTruncRad(double);
+    void setMatrixDist(double);
+    void setMatrixPWFPath(QString);
+
+    void setImpurLabel(QString);
+    void setImpurNumOrb(int);
+    void setImpurTruncRad(double);
+    void setImpurDist(double);
+    void setImpurPWFPath(QString);
+
+    void setHamProgress(int);
 
 private:
     Ui::MainWindow *ui;

@@ -1,7 +1,8 @@
-#include "sys_param.h"
-
 #ifndef W_MATRIX_H
 #define	W_MATRIX_H
+
+#include "sys_param.h"
+#include "PWF.h"
 
 class W_matrix {
 

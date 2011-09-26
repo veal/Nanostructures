@@ -1,9 +1,18 @@
 #include "Hop_integrals.h"
+Hop_integrals::Hop_integrals() {
+    _dBasisWF = new double[4][N_tot];
+    _dteta = new double[N_Max];
+    _dteta2 = new double[N_tot][N_Max];
+    _dR2 = new double[N_tot][N_Max];
+    _mk_atom2 = new int[N_tot][N_Max];
+    d_DeltaR = new double[N_tot];
+    _dR = new double[N_tot];
+    PARAM_FILE = "/home/veal/Sandbox/GUINano/Rezults/Hop_intergral_params.txt";
+    WF_FILE = "/home/veal/Sandbox/GUINano/Rezults/";
+    _dstep_teta = Pi/(N_Max-1);
+}
 
-
-#include "PWF.h"
-
-Hop_integrals::Hop_integrals(string matrixFilename, string impurityFilename) {
+Hop_integrals::Hop_integrals(QString matrixFilename, QString impurityFilename) {
 
     _matrixFilename = matrixFilename;
     _impurityFilename = impurityFilename;
@@ -15,8 +24,8 @@ Hop_integrals::Hop_integrals(string matrixFilename, string impurityFilename) {
     _mk_atom2 = new int[N_tot][N_Max];
     d_DeltaR = new double[N_tot];
     _dR = new double[N_tot];
-    PARAM_FILE = "Rezults/Hop_intergral_params.txt";
-    WF_FILE = "Rezults/";
+    PARAM_FILE = "/home/veal/Sandbox/GUINano/Rezults/Hop_intergral_params.txt";
+    WF_FILE = "/home/veal/Sandbox/GUINano/Rezults/";
     _dstep_teta = Pi/(N_Max-1);
 
     _matrixParam = readParamFile(_matrixFilename);
@@ -73,7 +82,7 @@ int Hop_integrals::calculateIntegrals(integralContainer *intCon, double distance
     ofstream VSFile;
     VSFile.open("Rezults/V_S_container.dat", ios::app);
 
-    VSFile << "Computation result for " <<_matrixFilename.c_str() << '\n';
+    VSFile << "Computation result for " <<_matrixFilename.toStdString() << '\n';
     VSFile << "Cut radius = " << _matrixParam->dr_max << "\tV\t" << "\tS\t"
             << "\tW\t" << "Distance = " << distance << '\n';
     VSFile.precision(5);
@@ -214,8 +223,11 @@ int Hop_integrals::calculateIntegrals(integralContainer *intCon, double distance
 }
 
 double Hop_integrals::FunS(int n_, int m_, int i_, int j_) {
-    return _dBasisWF[n_][i_] * _dBasisWF[m_][_mk_atom2[i_][j_]]
-            * _dR[i_] * _dR[i_] * sin(_dteta[j_]);
+    double result = _dBasisWF[n_][i_] * _dBasisWF[m_][_mk_atom2[i_][j_]]
+                    * _dR[i_] * _dR[i_] * sin(_dteta[j_]);
+    if (result < 0.0)
+        result = 0.0;
+    return result;
 }
 
 double Hop_integrals::FunV(double* pot, int n_, int m_, int i_, int j_) {
@@ -281,13 +293,17 @@ void Hop_integrals::setGrid(int m_Z) {
     double d_C = 0.88534138/pow(m_Z, 1.0/3.0);
     double d_DeltaX = 0.0025;
     
-    ofstream file(PARAM_FILE.c_str(), ios::app);
+    QFile file(PARAM_FILE);
+    if (!file.open(QFile::WriteOnly | QFile::Append)) {
+        cout << "couldn't open paramFile for writing.. Now exiting..\n";
+        return;
+    }
+    QTextStream fileStream(&file);
 
-    file << "Nuclear charge = " << m_Z << '\n'
+    fileStream << "Nuclear charge = " << m_Z << '\n'
             << "Number of blocks = " << m_Nblock << '\n';
 
-    file << "\td_X\t" << "\td_R\t" << "\td_DeltaR" << '\n';
-    file.precision(5);
+    fileStream << "\td_X\t" << "\td_R\t" << "\td_DeltaR" << '\n';
     double* d_X = new double[N_tot];
 
     for (int j = 0; j < m_Nblock; j++) {
@@ -296,55 +312,68 @@ void Hop_integrals::setGrid(int m_Z) {
             d_X[iter] = d_X[iter-1] + d_DeltaX;
             _dR[iter-1] = d_X[iter-1]*d_C;
             d_DeltaR[iter] = d_C*d_DeltaX;
-            file << iter-1 << '\t' << scientific << d_X[iter-1] << '\t' << _dR[iter-1] << '\t' <<
+            fileStream << iter-1 << '\t' << scientific << d_X[iter-1] << '\t' << _dR[iter-1] << '\t' <<
                     d_DeltaR[iter] << '\n';
         }
         d_DeltaX += d_DeltaX;
     }
 
     _dR[iter] = d_X[iter]*d_C;
-    file << iter << '\t' << scientific << d_X[iter] << '\t' << _dR[iter] << '\t' <<
+    fileStream << iter << '\t' << scientific << d_X[iter] << '\t' << _dR[iter] << '\t' <<
                     d_DeltaR[iter] << '\n';
     file.close();
 
     delete[] d_X;
 }
 
-Hop_integrals::paramFile* Hop_integrals::readParamFile(string filename) {
+Hop_integrals::paramFile* Hop_integrals::readParamFile(QString filename) {
     paramFile* newParam = new paramFile();
     newParam->initFile = filename;
-    ifstream file_desc(filename.c_str());
-    if (!file_desc.is_open()) {
+    QFile file_desc(filename);
+//    ifstream file_desc();
+    if (!file_desc.open(QFile::ReadOnly)) {
         cout << "Can't find file for Hop_integrals" << '\n';
         return NULL;
     }
 
-    string sz_temp;
+    QTextStream in(&file_desc);
 
-    getline(file_desc, sz_temp);
-    getline(file_desc, sz_temp);
-    getline(file_desc, sz_temp);
+    QString sz_temp;
 
-    file_desc >> newParam->m_Norbital;
-    file_desc >> newParam->m_BandNumber[0];
-    file_desc >> newParam->m_BandNumber[1];
-    file_desc >> newParam->m_BandNumber[2];
-    file_desc >> newParam->m_BandNumber[3];
-    getline(file_desc, sz_temp);
-    getline(file_desc, sz_temp);
-    getline(file_desc, sz_temp);
-    getline(file_desc, sz_temp);
-    file_desc >> newParam->dr_max;
-    getline(file_desc, sz_temp);
-    getline(file_desc, sz_temp);
-    getline(file_desc, newParam->sz_InputFile);
-    newParam->sz_InputFile.erase(newParam->sz_InputFile.end() - 1);
+    sz_temp = in.readLine();
+    newParam->elementLabel = in.readLine();
+    sz_temp = in.readLine();
+
+    in >> newParam->m_Norbital;
+    in >> newParam->m_BandNumber[0];
+    in >> newParam->m_BandNumber[1];
+    in >> newParam->m_BandNumber[2];
+    in >> newParam->m_BandNumber[3];
+
+    sz_temp = in.readLine();
+    sz_temp = in.readLine();
+    sz_temp = in.readLine();
+    newParam->latticeConst = sz_temp.trimmed().toDouble();
+    sz_temp = in.readLine();
+
+    in >> newParam->dr_max;
+    sz_temp = in.readLine();
+    sz_temp = in.readLine();
+    sz_temp = in.readLine();
+    newParam->sz_InputFile = sz_temp;
+
+//    newParam->sz_InputFile.resize(newParam->sz_InputFile.size() - 1);
 
     file_desc.close();
 
-    ofstream file(PARAM_FILE.c_str(), ios::app);
+    QFile file(PARAM_FILE);
+    if (!file.open(QFile::WriteOnly | QFile::Append)) {
+        cout << "Couldn't open paramFile for writing.. Now exiting..\n";
+        return NULL;
+    }
 
-    file << "Number of orbitals : " << newParam->m_Norbital << '\n' <<
+    QTextStream fileStream(&file);
+    fileStream << "Number of orbitals : " << newParam->m_Norbital << '\n' <<
             "First Band : " << newParam->m_BandNumber[0] << '\n' <<
             "Second Band : " << newParam->m_BandNumber[1] << '\n' <<
             "Third Band : " << newParam->m_BandNumber[2] << '\n' <<
@@ -357,7 +386,7 @@ Hop_integrals::paramFile* Hop_integrals::readParamFile(string filename) {
     return newParam;
 }
 
-PWF* Hop_integrals::readPWFFile(string initFile) {
+PWF* Hop_integrals::readPWFFile(QString initFile) {
     paramFile currParamFile;
     double* dPotential = new double[N_tot];
     double* dEnergyLevels = new double[4];
@@ -369,23 +398,26 @@ PWF* Hop_integrals::readPWFFile(string initFile) {
             break;
         }
     }
-    ifstream inputFile(currParamFile.sz_InputFile.c_str());
+    QFile inputFile(currParamFile.sz_InputFile);
 
-    if (!inputFile.is_open()) {
-        string temp = "Can't find pwf file :";
+    if (!inputFile.open(QFile::ReadOnly)) {
+        QString temp = "Can't find pwf file :";
         temp += currParamFile.sz_InputFile;
-        cout << temp << '\n';
+        cout << temp.toStdString() << '\n';
         return NULL;
     }
 
-    inputFile >> m_Z >> m_temp >> m_temp >> m_temp >> m_temp;
-    getline(inputFile, sz_temp);
-    getline(inputFile, sz_temp);
+    QTextStream in(&inputFile);
+
+    in >> m_Z >> m_temp >> m_temp >> m_temp >> m_temp;
+
+    sz_temp = in.readLine();
+    sz_temp = in.readLine();
 
     setGrid(m_Z);
 
     for (int iter = 0; iter < N_tot; iter++) {
-        inputFile >> dPotential[iter];
+        in >> dPotential[iter];
     }
 
     for (int j = 1; j < N_tot; j++) {
@@ -405,11 +437,11 @@ PWF* Hop_integrals::readPWFFile(string initFile) {
         double d_EnergyofState;
         double d_temp;
         int m_NumberofPoints;
-        inputFile >> m_Orbital_number >> d_temp >> d_EnergyofState >> d_temp >> m_NumberofPoints >> d_temp;
-        getline(inputFile, sz_temp);
+        in >> m_Orbital_number >> d_temp >> d_EnergyofState >> d_temp >> m_NumberofPoints >> d_temp;
+        sz_temp = in.readLine();
         if (m_Orbital_number == currParamFile.m_BandNumber[0]) {
             for (int iter = 0; iter < m_NumberofPoints; iter++) {
-                inputFile >> _dRadialPartWF[0][iter];
+                in >> _dRadialPartWF[0][iter];
                 if (iter != 0)
                     _dRadialPartWF[0][iter] /= _dR[iter];
             }
@@ -418,7 +450,7 @@ PWF* Hop_integrals::readPWFFile(string initFile) {
         } else
         if (m_Orbital_number == currParamFile.m_BandNumber[1]) {
                 for (int iter = 0; iter < m_NumberofPoints; iter++) {
-                    inputFile >> _dRadialPartWF[1][iter];
+                    in >> _dRadialPartWF[1][iter];
                     if (iter != 0)
                         _dRadialPartWF[1][iter] /= _dR[iter];
                 }
@@ -427,7 +459,7 @@ PWF* Hop_integrals::readPWFFile(string initFile) {
         } else
         if (m_Orbital_number == currParamFile.m_BandNumber[2]) {
                 for (int iter = 0; iter < m_NumberofPoints; iter++) {
-                    inputFile >> _dRadialPartWF[2][iter];
+                    in >> _dRadialPartWF[2][iter];
                     if (iter != 0)
                         _dRadialPartWF[2][iter] /= _dR[iter];
                 }
@@ -436,7 +468,7 @@ PWF* Hop_integrals::readPWFFile(string initFile) {
         } else
         if (m_Orbital_number == currParamFile.m_BandNumber[3]) {
                 for (int iter = 0; iter < m_NumberofPoints; iter++) {
-                    inputFile >> _dRadialPartWF[3][iter];
+                    in >> _dRadialPartWF[3][iter];
                     if (iter != 0)
                         _dRadialPartWF[3][iter] /= _dR[iter];
                 }
@@ -445,9 +477,9 @@ PWF* Hop_integrals::readPWFFile(string initFile) {
         }
         else {
             for (int iter = 0; iter < m_NumberofPoints; iter++) {
-                inputFile >> d_temp;
+                in >> d_temp;
             }
-            getline(inputFile, sz_temp);
+            sz_temp = in.readLine();
         }
 
     }
@@ -477,6 +509,7 @@ PWF* Hop_integrals::readPWFFile(string initFile) {
 void Hop_integrals::anotherCoordSys(double distance) {
 //    ofstream VSFile("Rezults/V_S_container.dat", ios::app);
 //    VSFile << "Another coord sys indices" << '\n';
+    _dteta[0] = 0;
     for (int i = 1; i < N_Max; i++) {
         _dteta[i] = _dteta[i-1] + _dstep_teta;
     }
@@ -513,22 +546,29 @@ void Hop_integrals::anotherCoordSys(double distance) {
 }
 
 void Hop_integrals::publishRezults(int m_band, double* source) {
-    string temp_path;
-    std::stringstream sstr;
-    sstr << _matrixParam->m_BandNumber[m_band];
-    string band(sstr.str());
+    QString temp_path;
+    QTextStream sstr(&temp_path);
     if (m_band >= 0) {
-        temp_path = WF_FILE + band + "_WF_values_.dat";
+        sstr << WF_FILE <<  _matrixParam->m_BandNumber[m_band] << "_WF_values_.dat";
     } else {
-        temp_path = WF_FILE + "potential_values_.dat";
+        sstr << WF_FILE << "potential_values_.dat";
     }
-    ofstream file(temp_path.c_str(), ios::app);
+    QFile file(temp_path);
 
-    file << "\n_______________________________\n";
+    if (!file.open(QFile::WriteOnly)) {
+        QString temp = "Can't write to ";
+        temp += temp_path;
+        cout << temp.toStdString() <<  "file.\n";
+        return;
+    }
 
-    file.precision(5);
+    QTextStream filestream(&file);
+
+    filestream << "\n_______________________________\n";
+
+//    file.precision(5);
     for (int i = 0; i < N_tot; i++) {
-        file << i << '\t' << _dR[i] << '\t' << scientific << source[i] << '\n';
+        filestream << i << '\t' << _dR[i] << '\t' << scientific << source[i] << '\n';
     }
 
     file.close();

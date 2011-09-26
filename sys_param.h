@@ -3,13 +3,14 @@
 
 #include "nr3.h"
 #include "PWF.h"
+
 #include <stdio.h>
 #include <pthread.h>
 #include <fstream>
 #include <string>
 #include <iostream>
 #include <complex>
-#include "Hop_integrals.h"
+
 #include "W_matrix.h"
 
 class Hop_integrals;
@@ -69,7 +70,6 @@ extern int mm_stop, l_data;
 extern Doub del_m;
 extern pthread_mutex_t job_queue;
 
-void F_Hk(Doub, Doub[N_Com][N_En_Pr], Comp[N_LAT][N_LAT][N_Band][N_Band], Doub[N_LAT][3][3]);
 void CP_Calculation(Comp Coh_p[N_LAT][N_LAT][N_Band][N_Band], Doub E, int niE, Comp W[N_Com][N_LAT][N_LAT][N_LAT][N_Band][N_Band],
         Doub vm[2][N_Com][N_LAT][2][N_Band], Doub Pm[2][N_LAT], Doub Cl[N_Com][N_LAT],
         Comp Hr[Nkp2][N_LAT][N_LAT][N_Band][N_Band], Doub r[N_LAT][3][3], int spin, double *f2);
@@ -87,11 +87,9 @@ void matinv3(Comp B[N_Alpha][N_Alpha],Comp res[N_Alpha][N_Alpha]);
 void Trans_Hk(Comp S[N_LAT][N_LAT][N_Band][N_Band], Comp H[N_LAT][N_LAT][N_Band][N_Band],
 			  Comp H1[N_LAT][N_LAT][N_Band][N_Band], bool);
 void checkIfMatrixIsHermitian(Comp[N_LAT][N_LAT][N_Band][N_Band], Doub ACCURACY);
-void Hop_int(int, Comp[Nkp2][N_LAT][N_LAT][N_Band][N_Band], Doub[N_LAT][3][3], Hop_integrals);
 void G_phonon(Comp G_p[N_LAT][N_LAT][N_Alpha][N_Alpha],Comp D_k[Nkp2][N_LAT][N_LAT][N_Alpha][N_Alpha], Doub E_r,
 			  Comp Coh_p[N_LAT][N_Alpha][N_Alpha], Doub r[N_LAT][3][3]);
 Doub dI(Doub y_2, Doub y_1, Doub y, Doub h);
-void Calculate_Hamiltonian(Hop_integrals*);
 void Calculate_Wamiltonian(PWF*, PWF*);
 struct parameters
 {

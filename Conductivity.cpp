@@ -234,8 +234,8 @@ void Conductivity(complex<Doub> sigma_coh[2], complex<Doub> sigma_comp[18], comp
 		for (int k1 = -Nkp; k1 < Nkp; k1++)
 		{
 			Doub kx = 2.0*Pi*static_cast<Doub>(k1)/(3*Nkp);
-			Hij_k(kx, Hr, H_k, r);
-			Hij_k (kx, H_Difr, H_Dk, r);
+//			Hij_k(kx, Hr, H_k, r);
+//			Hij_k (kx, H_Difr, H_Dk, r);
 			complex<Doub> (*Ho_k1)[N_LAT*N_Band] = new complex<Doub>[N_LAT*N_Band][N_LAT*N_Band];
 			complex<Doub> (*H_k1)[N_LAT*N_Band] = new complex<Doub>[N_LAT*N_Band][N_LAT*N_Band];
 			complex<Doub> (*G_k1)[N_LAT*N_Band] = new complex<Doub>[N_LAT*N_Band][N_LAT*N_Band];

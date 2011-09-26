@@ -1,9 +1,16 @@
 #include "lab.h"
 
 Lab::Lab(){
+    hamiltonian = new Hamiltonian();
 }
 void Lab::run() {
     runCalculation();
+}
+void Lab::setProgressUpdateCallback(Controller *c) {
+    controller = c;
+}
+void Lab::updateProgress(int percent) {
+    controller->HamCalcProgressUpdate(percent);
 }
 
 void Lab::runCalculation() {
@@ -17,8 +24,8 @@ void Lab::runCalculation() {
     Read_input_file(ni0, mm0, nm_1, mm_1);
     //�������� ����������� ��������� (39,39)
     Read_Coulomb_integral(U_matr);
-    Hop_integrals* hopIntegral = new Hop_integrals(matrixInputFile.toStdString(), impurityInputFile.toStdString());
-    Calculate_Hamiltonian(hopIntegral);
+    Hop_integrals* hopIntegral = new Hop_integrals(matrixInputFile, impurityInputFile);
+    hamiltonian->Calculate_Hamiltonian(hopIntegral);
     return;
     Calculate_Wamiltonian(hopIntegral->getMatrixPWF(), hopIntegral->getImpurityPWF());
 
@@ -469,4 +476,8 @@ void Lab::set_matrixInputFile(QString str) {
 
 void Lab::set_impurityInputFile(QString str) {
     impurityInputFile = str;
+}
+
+Hop_integrals* Lab::getHopIntegrals() {
+    return &hopIntegrals;
 }

@@ -1,12 +1,14 @@
-#include "PWF.h"
+#ifndef HOP_INTEGRALS_H
+#define	HOP_INTEGRALS_H
+
+#include <QFile>
+#include <QTextStream>
 #include <stdio.h>
 #include <fstream>
 #include <string>
 #include <iostream>
 #include <complex>
-
-#ifndef HOP_INTEGRALS_H
-#define	HOP_INTEGRALS_H
+#include "PWF.h"
 
 class Hop_integrals {
 
@@ -35,22 +37,23 @@ class Hop_integrals {
             }
     };
 
-    struct paramFile {
-        string initFile;
-        double dr_max;
-        int m_BandNumber[4], m_Norbital;
-        string sz_InputFile;
-    };
-
-    vector<integralContainer> integralList;
-    vector<paramFile> paramFileList;
-
     static const int N_tot = 441;
     static const int N_Max = 441;
     static const double LATTICE_CONSTANT = 2.684310019; //honeycomb graphene structures Bohr radii
 
 public:
-    Hop_integrals(string, string);
+
+    struct paramFile {
+        QString initFile;
+        double dr_max;
+        int m_BandNumber[4], m_Norbital;
+        QString sz_InputFile;
+        QString elementLabel;
+        double latticeConst;
+    };
+
+    Hop_integrals();
+    Hop_integrals(QString, QString);
     Hop_integrals(const Hop_integrals& orig);
     int get_integrals(double** V_container, double** S_container, double** W_container, const double distance);
     virtual ~Hop_integrals();
@@ -63,16 +66,17 @@ public:
         return _matrixPWF;
     }
 
+    paramFile* readParamFile(QString fileName);
 
 private:
-    
-    string _matrixFilename;
-    string _impurityFilename;
-    string sz_matrixInputFile;
-    string sz_ImpurityInputFile;
-    string sz_temp;
-    string PARAM_FILE;
-    string WF_FILE;
+
+    QString _matrixFilename;
+    QString _impurityFilename;
+    QString sz_matrixInputFile;
+    QString sz_ImpurityInputFile;
+    QString sz_temp;
+    QString PARAM_FILE;
+    QString WF_FILE;
 
     PWF* _matrixPWF;
     PWF* _impurityPWF;
@@ -88,7 +92,9 @@ private:
     int (*_mk_atom2)[N_Max];
     int m_temp;
     
-    
+    vector<integralContainer> integralList;
+    vector<paramFile> paramFileList;
+
     double FunS(int n_, int m_, int i_, int j_);
 
     double FunV(double* pot,int n_, int m_, int i_, int j_);
@@ -101,9 +107,7 @@ private:
 
     void setGrid(const int);
 
-    paramFile* readParamFile(string fileName);
-
-    PWF* readPWFFile(string initFile);
+    PWF* readPWFFile(QString initFile);
 
     int readImpurityPotentialFromPWFFile();
 

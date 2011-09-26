@@ -6,9 +6,15 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1128</width>
-    <height>206</height>
+    <width>902</width>
+    <height>398</height>
    </rect>
+  </property>
+  <property name="sizePolicy">
+   <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+    <horstretch>0</horstretch>
+    <verstretch>0</verstretch>
+   </sizepolicy>
   </property>
   <property name="windowTitle">
    <string>GUINano</string>
@@ -17,7 +23,7 @@
    <widget class="QPushButton" name="pushButton_3">
     <property name="geometry">
      <rect>
-      <x>910</x>
+      <x>640</x>
       <y>90</y>
       <width>121</width>
       <height>27</height>
@@ -27,12 +33,12 @@
      <string>Get Hamiltonian</string>
     </property>
    </widget>
-   <widget class="QWidget" name="">
+   <widget class="QWidget" name="layoutWidget">
     <property name="geometry">
      <rect>
       <x>10</x>
       <y>10</y>
-      <width>981</width>
+      <width>751</width>
       <height>29</height>
      </rect>
     </property>
@@ -45,7 +51,11 @@
       </widget>
      </item>
      <item>
-      <widget class="QLineEdit" name="lineEdit"/>
+      <widget class="QLineEdit" name="lineEdit">
+       <property name="enabled">
+        <bool>false</bool>
+       </property>
+      </widget>
      </item>
      <item>
       <widget class="QPushButton" name="pushButton">
@@ -56,12 +66,12 @@
      </item>
     </layout>
    </widget>
-   <widget class="QWidget" name="">
+   <widget class="QWidget" name="layoutWidget">
     <property name="geometry">
      <rect>
       <x>10</x>
       <y>50</y>
-      <width>981</width>
+      <width>751</width>
       <height>29</height>
      </rect>
     </property>
@@ -74,7 +84,11 @@
       </widget>
      </item>
      <item>
-      <widget class="QLineEdit" name="lineEdit_2"/>
+      <widget class="QLineEdit" name="lineEdit_2">
+       <property name="enabled">
+        <bool>false</bool>
+       </property>
+      </widget>
      </item>
      <item>
       <widget class="QPushButton" name="pushButton_2">
@@ -85,13 +99,286 @@
      </item>
     </layout>
    </widget>
+   <widget class="QLabel" name="label_3">
+    <property name="geometry">
+     <rect>
+      <x>30</x>
+      <y>140</y>
+      <width>111</width>
+      <height>17</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Matrix element:</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label_5">
+    <property name="geometry">
+     <rect>
+      <x>30</x>
+      <y>160</y>
+      <width>140</width>
+      <height>17</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Number of orbitals:</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="matrixNumOrbLabel">
+    <property name="geometry">
+     <rect>
+      <x>170</x>
+      <y>160</y>
+      <width>67</width>
+      <height>17</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string/>
+    </property>
+   </widget>
+   <widget class="QLabel" name="matrixElementLabel">
+    <property name="geometry">
+     <rect>
+      <x>170</x>
+      <y>140</y>
+      <width>67</width>
+      <height>17</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string/>
+    </property>
+   </widget>
+   <widget class="QLabel" name="matrixDistLabel">
+    <property name="geometry">
+     <rect>
+      <x>170</x>
+      <y>200</y>
+      <width>67</width>
+      <height>17</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string/>
+    </property>
+   </widget>
+   <widget class="QLabel" name="matrixRadLabel">
+    <property name="geometry">
+     <rect>
+      <x>170</x>
+      <y>180</y>
+      <width>67</width>
+      <height>17</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string/>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label_10">
+    <property name="geometry">
+     <rect>
+      <x>30</x>
+      <y>200</y>
+      <width>110</width>
+      <height>17</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Distance:</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label_4">
+    <property name="geometry">
+     <rect>
+      <x>30</x>
+      <y>180</y>
+      <width>120</width>
+      <height>17</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Truncating radius:</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label_11">
+    <property name="geometry">
+     <rect>
+      <x>440</x>
+      <y>180</y>
+      <width>120</width>
+      <height>17</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Truncating radius:</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="impurNumOrbLabel">
+    <property name="geometry">
+     <rect>
+      <x>580</x>
+      <y>160</y>
+      <width>67</width>
+      <height>17</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string/>
+    </property>
+   </widget>
+   <widget class="QLabel" name="impurElementLabel">
+    <property name="geometry">
+     <rect>
+      <x>580</x>
+      <y>140</y>
+      <width>67</width>
+      <height>17</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string/>
+    </property>
+   </widget>
+   <widget class="QLabel" name="impurRadLabel">
+    <property name="geometry">
+     <rect>
+      <x>580</x>
+      <y>180</y>
+      <width>67</width>
+      <height>17</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string/>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label_15">
+    <property name="geometry">
+     <rect>
+      <x>440</x>
+      <y>160</y>
+      <width>140</width>
+      <height>17</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Number of orbitals:</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label_16">
+    <property name="geometry">
+     <rect>
+      <x>440</x>
+      <y>140</y>
+      <width>120</width>
+      <height>17</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Impurity element:</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="impurDistLabel">
+    <property name="geometry">
+     <rect>
+      <x>580</x>
+      <y>200</y>
+      <width>67</width>
+      <height>17</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string/>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label_18">
+    <property name="geometry">
+     <rect>
+      <x>440</x>
+      <y>200</y>
+      <width>110</width>
+      <height>17</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Distance:</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="matrixPwfPathLabel">
+    <property name="geometry">
+     <rect>
+      <x>30</x>
+      <y>240</y>
+      <width>391</width>
+      <height>17</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string/>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label_20">
+    <property name="geometry">
+     <rect>
+      <x>30</x>
+      <y>220</y>
+      <width>121</width>
+      <height>17</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Path to PWF file:</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="impurPwfPathLabel">
+    <property name="geometry">
+     <rect>
+      <x>440</x>
+      <y>240</y>
+      <width>441</width>
+      <height>17</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string/>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label_22">
+    <property name="geometry">
+     <rect>
+      <x>440</x>
+      <y>220</y>
+      <width>121</width>
+      <height>17</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Path to PWF file:</string>
+    </property>
+   </widget>
+   <widget class="QProgressBar" name="progressBar">
+    <property name="geometry">
+     <rect>
+      <x>50</x>
+      <y>90</y>
+      <width>541</width>
+      <height>23</height>
+     </rect>
+    </property>
+    <property name="value">
+     <number>24</number>
+    </property>
+   </widget>
   </widget>
   <widget class="QMenuBar" name="menuBar">
    <property name="geometry">
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>1128</width>
+     <width>902</width>
      <height>25</height>
     </rect>
    </property>

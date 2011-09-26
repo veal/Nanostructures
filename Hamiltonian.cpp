@@ -1,13 +1,16 @@
-#include "sys_param.h"
-#include "Hop_integrals.h"
+#include "Hamiltonian.h"
 
-void F_Hk(Doub kx, Comp H[N_LAT][N_LAT][N_Band][N_Band], Doub r[N_LAT][3][3],
+Hamiltonian::Hamiltonian() {
+}
+
+void Hamiltonian::F_Hk(Doub kx, Comp H[N_LAT][N_LAT][N_Band][N_Band], Doub r[N_LAT][3][3],
         Hop_integrals* hopIntegral, uint integralType) {
     if (VERBOSE)
         cout << "F_Hk started.." << '\n';
     Doub *V1, *V2, *V3;
     Doub *V;
-    Doub V_S[] = {1.0, 1.0, 0.231147, 0.591972}; //!!! Change 3-rd and 4-th element on cut radius change
+    Doub *V01, *V02, *V03;
+    hopIntegral->get_integrals(&V01, &V02, &V03, 0);
     V = hopIntegral->getMatrixPWF()->getEnergyLevel();
     Doub a, d, Pi, x, y, z;
 
@@ -27,7 +30,7 @@ void F_Hk(Doub kx, Comp H[N_LAT][N_LAT][N_Band][N_Band], Doub r[N_LAT][3][3],
                         cout << "Still working.." << '\n';
                     if (integralType == 1) {
                         V1 = V2;
-                        V = V_S;
+                        V = V02;
                     }
                 }
                 if (d < 2.1 && d > 0.0) {
@@ -191,7 +194,7 @@ void F_Hk(Doub kx, Comp H[N_LAT][N_LAT][N_Band][N_Band], Doub r[N_LAT][3][3],
                     H[i][j][0][6] = 0.0;
                     H[i][j][0][7] = 0.0;
                     H[i][j][0][8] = 0.0;
-                    H[i][j][0][9] = 0.0;
+                    H[i][j][0][9] = V[10];
                     H[i][j][1][0] = 0.0;
                     H[i][j][1][1] = V[1];
                     H[i][j][1][2] = 0.0;
@@ -204,7 +207,7 @@ void F_Hk(Doub kx, Comp H[N_LAT][N_LAT][N_Band][N_Band], Doub r[N_LAT][3][3],
                     H[i][j][1][9] = 0.0;
                     H[i][j][2][0] = 0.0;
                     H[i][j][2][1] = 0.0;
-                    H[i][j][2][2] = V[1];
+                    H[i][j][2][2] = V[2];
                     H[i][j][2][3] = 0.0;
                     H[i][j][2][4] = 0.0;
                     H[i][j][2][5] = 0.0;
@@ -215,7 +218,7 @@ void F_Hk(Doub kx, Comp H[N_LAT][N_LAT][N_Band][N_Band], Doub r[N_LAT][3][3],
                     H[i][j][3][0] = 0.0;
                     H[i][j][3][1] = 0.0;
                     H[i][j][3][2] = 0.0;
-                    H[i][j][3][3] = V[1];
+                    H[i][j][3][3] = V[2];
                     H[i][j][3][4] = 0.0;
                     H[i][j][3][5] = 0.0;
                     H[i][j][3][6] = 0.0;
@@ -226,7 +229,7 @@ void F_Hk(Doub kx, Comp H[N_LAT][N_LAT][N_Band][N_Band], Doub r[N_LAT][3][3],
                     H[i][j][4][1] = 0.0;
                     H[i][j][4][2] = 0.0;
                     H[i][j][4][3] = 0.0;
-                    H[i][j][4][4] = V[2];
+                    H[i][j][4][4] = V[3];
                     H[i][j][4][5] = 0.0;
                     H[i][j][4][6] = 0.0;
                     H[i][j][4][7] = 0.0;
@@ -237,7 +240,7 @@ void F_Hk(Doub kx, Comp H[N_LAT][N_LAT][N_Band][N_Band], Doub r[N_LAT][3][3],
                     H[i][j][5][2] = 0.0;
                     H[i][j][5][3] = 0.0;
                     H[i][j][5][4] = 0.0;
-                    H[i][j][5][5] = V[2];
+                    H[i][j][5][5] = V[4];
                     H[i][j][5][6] = 0.0;
                     H[i][j][5][7] = 0.0;
                     H[i][j][5][8] = 0.0;
@@ -248,7 +251,7 @@ void F_Hk(Doub kx, Comp H[N_LAT][N_LAT][N_Band][N_Band], Doub r[N_LAT][3][3],
                     H[i][j][6][3] = 0.0;
                     H[i][j][6][4] = 0.0;
                     H[i][j][6][5] = 0.0;
-                    H[i][j][6][6] = V[2];
+                    H[i][j][6][6] = V[4];
                     H[i][j][6][7] = 0.0;
                     H[i][j][6][8] = 0.0;
                     H[i][j][6][9] = 0.0;
@@ -259,7 +262,7 @@ void F_Hk(Doub kx, Comp H[N_LAT][N_LAT][N_Band][N_Band], Doub r[N_LAT][3][3],
                     H[i][j][7][4] = 0.0;
                     H[i][j][7][5] = 0.0;
                     H[i][j][7][6] = 0.0;
-                    H[i][j][7][7] = V[2];
+                    H[i][j][7][7] = V[4];
                     H[i][j][7][8] = 0.0;
                     H[i][j][7][9] = 0.0;
                     H[i][j][8][0] = 0.0;
@@ -270,9 +273,9 @@ void F_Hk(Doub kx, Comp H[N_LAT][N_LAT][N_Band][N_Band], Doub r[N_LAT][3][3],
                     H[i][j][8][5] = 0.0;
                     H[i][j][8][6] = 0.0;
                     H[i][j][8][7] = 0.0;
-                    H[i][j][8][8] = V[2];
+                    H[i][j][8][8] = V[5];
                     H[i][j][8][9] = 0.0;
-                    H[i][j][9][0] = 0.0;
+                    H[i][j][9][0] = V[10];
                     H[i][j][9][1] = 0.0;
                     H[i][j][9][2] = 0.0;
                     H[i][j][9][3] = 0.0;
@@ -281,7 +284,7 @@ void F_Hk(Doub kx, Comp H[N_LAT][N_LAT][N_Band][N_Band], Doub r[N_LAT][3][3],
                     H[i][j][9][6] = 0.0;
                     H[i][j][9][7] = 0.0;
                     H[i][j][9][8] = 0.0;
-                    H[i][j][9][9] = V[3];
+                    H[i][j][9][9] = V[13];
                 }
             }
         }
@@ -290,13 +293,13 @@ void F_Hk(Doub kx, Comp H[N_LAT][N_LAT][N_Band][N_Band], Doub r[N_LAT][3][3],
         cout << "Hop_int finished.." << '\n';
 }
 
-void Hop_int(int Nkp, Comp H_k[Nkp2][N_LAT][N_LAT][N_Band][N_Band], Doub r[N_LAT][3][3], Hop_integrals* hopIntegral) {
+void Hamiltonian::Hop_int(int Nkp, Comp H_k[Nkp2][N_LAT][N_LAT][N_Band][N_Band], Doub r[N_LAT][3][3], Hop_integrals* hopIntegral) {
     if (VERBOSE)
         cout << "Hop_int started.." << '\n';
-    ofstream Ham_k_file("Rezults/Ham.dat");
-    ofstream HDif_k_file("Rezults/HDif.dat");
+    ofstream Ham_k_file("/home/veal/Sandbox/GUINano/Rezults/Ham.dat");
+    ofstream HDif_k_file("/home/veal/Sandbox/GUINano/Rezults/HDif.dat");
 
-    for (int k = -Nkp; k < Nkp; k++) { //!!!!
+    for (int k = -Nkp; k < Nkp; k++) {
         complex<Doub > (*H)[N_LAT][N_Band][N_Band] = new Comp[N_LAT][N_LAT][N_Band][N_Band];
         complex<Doub > (*W)[N_LAT][N_Band][N_Band] = new Comp[N_LAT][N_LAT][N_Band][N_Band];
         complex<Doub > (*S)[N_LAT][N_Band][N_Band] = new Comp[N_LAT][N_LAT][N_Band][N_Band];
@@ -309,7 +312,7 @@ void Hop_int(int Nkp, Comp H_k[Nkp2][N_LAT][N_LAT][N_Band][N_Band], Doub r[N_LAT
 
 //		Speed(kx, V_p, H_Dif, r);
 //		Trans_Hk(S, H_Dif, H_Dif);
-        Trans_Hk(S, H, H, false);
+        Trans_Hk(S, H, H, true);
 
 //        Eigen_values(H, NULL, true);
 
@@ -345,7 +348,7 @@ void Hop_int(int Nkp, Comp H_k[Nkp2][N_LAT][N_LAT][N_Band][N_Band], Doub r[N_LAT
         cout << "Hop_int finished.." << '\n';
 }
 
-void Hij_k(Doub kx, Comp Hr[3][3][N_LAT][N_LAT][N_Band][N_Band],
+void Hamiltonian::Hij_k(Doub kx, Comp Hr[3][3][N_LAT][N_LAT][N_Band][N_Band],
         Comp Hij[N_LAT][N_LAT][N_Band][N_Band], Doub r[N_LAT][3][3]) {
     Comp c1(0.0, 1.0), z;
     for (int i = 0; i < N_LAT; i++) {
@@ -365,19 +368,19 @@ void Hij_k(Doub kx, Comp Hr[3][3][N_LAT][N_LAT][N_Band][N_Band],
     }
 }
 
-void Calculate_Hamiltonian(Hop_integrals* hopIntegral) {
+void Hamiltonian::Calculate_Hamiltonian(Hop_integrals* hopIntegral) {
     if (VERBOSE)
         cout << "Calculate_hamiltonian started.." << '\n';
     if (calculateHamiltonian == true) {
         ofstream Ham_r_file;
-        Ham_r_file.open("Rezults/H_k.dat", ios::binary);
+        Ham_r_file.open("/home/veal/Sandbox/GUINano/Rezults/H_k.dat", ios::binary);
         Hop_int(Nkp, H_k, r, hopIntegral);
         Ham_r_file.write((char*) H_k, Nkp2 * N_LAT * N_LAT * N_Band * N_Band * sizeof (Comp));
         Ham_r_file.close();
     } else {
         cout << "Reading Hamiltonian.." << '\n';
         ifstream Ham_r_file;
-        Ham_r_file.open("Rezults/H_k.dat", ios::binary);
+        Ham_r_file.open("/home/veal/Sandbox/GUINano/Rezults/H_k.dat", ios::binary);
         Ham_r_file.read((char*) H_k, Nkp2 * N_LAT * N_LAT * N_Band * N_Band * sizeof (Comp));
         Ham_r_file.close();
     }

@@ -32,7 +32,8 @@ SOURCES += main.cpp\
     allocation.cpp \
     controller.cpp \
     labcontroller.cpp \
-    task.cpp
+    task.cpp \
+    ctemp.cpp
 
 HEADERS  += mainwindow.h \
     W_matrix.h \
@@ -48,6 +49,10 @@ HEADERS  += mainwindow.h \
     ceigen_sym.h \
     controller.h \
     labcontroller.h \
-    task.h
+    task.h \
+    ctemp.h \
+    Hamiltonian.h \
+    initclass.h \
+    GlobalConstVar.h
 
 FORMS    += mainwindow.ui
