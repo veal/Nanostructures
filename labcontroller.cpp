@@ -13,7 +13,7 @@ void LabController::set_impurityInputFileStr(QString str) {
 void LabController::notifyStartcalculating() {
     lab.set_matrixInputFile(matrixInputFileStr);
     lab.set_impurityInputFile(impurityInputFileStr);
-    threadPool.start(&lab);
+    QThreadPool::globalInstance()->start(&lab);
 }
 void LabController::matrixFileChosen(QString str) {
     fillMatrixFields(lab.getHopIntegrals()->readParamFile(str));

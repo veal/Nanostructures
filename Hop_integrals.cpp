@@ -79,13 +79,27 @@ int Hop_integrals::calculateIntegrals(integralContainer *intCon, double distance
 
     anotherCoordSys(lclDistance);
 
-    ofstream VSFile;
-    VSFile.open("Rezults/V_S_container.dat", ios::app);
+//    ofstream VSFile;
+    QString str;
+    QTextStream sstr(&str);
+    sstr << WF_FILE << "V_S_container.dat";
+    QFile VSFile(str);
 
-    VSFile << "Computation result for " <<_matrixFilename.toStdString() << '\n';
-    VSFile << "Cut radius = " << _matrixParam->dr_max << "\tV\t" << "\tS\t"
+    if (!VSFile.open(QFile::WriteOnly | QFile::Append)) {
+        QString temp = "Can't find pwf file :";
+        temp += "Rezults/V_S_container.dat";
+        cout << temp.toStdString() << '\n';
+        return NULL;
+    }
+
+    QTextStream in(&VSFile);
+    in.setRealNumberNotation(QTextStream::ScientificNotation);
+
+//    VSFile.open("Rezults/V_S_container.dat", ios::app);
+
+    in << "Computation result for " <<_matrixFilename << '\n';
+    in << "Cut radius = " << _matrixParam->dr_max << "\tV\t" << "\tS\t"
             << "\tW\t" << "Distance = " << distance << '\n';
-    VSFile.precision(5);
     double* cleanPotential = _matrixPWF->getScaledPotential(_matrixPWF->nuclearCharge);
     double* impurityPotential = _impurityPWF->getScaledPotential(_matrixPWF->nuclearCharge);
     for (int m_orb = 0; m_orb < 14; m_orb++) {
@@ -161,19 +175,8 @@ int Hop_integrals::calculateIntegrals(integralContainer *intCon, double distance
             lm = 0;
         }
         double d_Int1 = 0, d_Int2 = 0, d_Int3 = 0;
-//        double Max = -1e+6, Min = 1e+6;
-//        int imin, jmin;
-//        int imax, jmax;
         for (int i = 1; i < N_tot; i++) {
-            for (int j = 1; j < N_Max; j++) {
-//                if (FunV(n,m,i,j) < Min) {
-//                    imin = i; jmin = j;
-//                    Min = FunV(n,m,i,j);
-//                }
-//                if (FunV(n,m,i,j) > Max) {
-//                    imax = i; jmax = j;
-//                    Max = FunV(n,m,i,j);
-//                }    
+            for (int j = 1; j < N_Max; j++) {   
                 d_Int1 += (1.0/4.0)*_dstep_teta*d_DeltaR[i] *
                 (FunS(n,m,i-1,j-1)*PolLagr(m_orb,_dteta[j-1],_dteta2[i-1][j-1]) +
                 FunS(n,m,i-1,j)*PolLagr(m_orb, _dteta[j], _dteta2[i-1][j]) +
@@ -196,26 +199,9 @@ int Hop_integrals::calculateIntegrals(integralContainer *intCon, double distance
         d_Int1 + d_Int2;
 
         intCon->Wcontainer[m_orb] = d_Int3 - d_Int2;
-        VSFile << n << '\t' << m << '\t' << lm << '\t' << scientific << intCon->Vcontainer[m_orb] <<
-                '\t' << intCon->Scontainer[m_orb] << '\t' << intCon->Wcontainer[m_orb] << '\n';
-//        VSFile << m_orb << "-------------------------------------------------------" << '\n';
-//        VSFile << imin << '\t' << jmin << '\t' << scientific << Min << '\n';
-//        VSFile << imax << '\t' << jmax << '\t' << scientific << Max << '\n';
-        
+        in << n << '\t' << m << '\t' << lm << '\t' << scientific << intCon->Vcontainer[m_orb] <<
+                '\t' << intCon->Scontainer[m_orb] << '\t' << intCon->Wcontainer[m_orb] << '\n';   
     }
-//    for (int i = 1; i < N_tot; i++) {
-//            V_pot(1) = V_pot(1) + (1.0/4.0)*d_step_teta*d_DeltaR(i)*
-//            (FunV1(1,i-1) + FunV1(1,i-1) + FunV1(1,i) + FunV1(1,i));
-//
-//            V_pot(2) = V_pot(2) + (1.0/4.0)*d_step_teta*d_DeltaR(i)*
-//            (FunV1(2,i-1) + FunV1(2,i-1) + FunV1(2,i) + FunV1(2,i));
-//
-//            V_pot(3) = V_pot(3) + (1.0/4.0)*d_step_teta*d_DeltaR(i)*
-//            (FunV1(3,i-1) + FunV1(3,i-1) + FunV1(3,i) + FunV1(3,i));
-//
-//            V_pot(4) = V_pot(4) + (1.0/4.0)*d_step_teta*d_DeltaR(i)*
-//            (FunV1(4,i-1) + FunV1(4,i-1) + FunV1(4,i) + FunV1(4,i));
-//    }
 
     VSFile.close();
 

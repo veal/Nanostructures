@@ -494,10 +494,10 @@ void Trans_Hk(Comp S[N_LAT][N_LAT][N_Band][N_Band], Comp H[N_LAT][N_LAT][N_Band]
         for (int i1 = 0; i1 < N_LAT * N_Band; i1++) {
             first[i][i1] = Comp(qwerty.z[i][2*i1], qwerty.z[N_LAT*N_Band+i][2*i1]);
             middle[i][i1] = (i == i1) ? Comp(1.0, 0.0)/sqrt(Comp(qwerty.d[2*i], 0.0)) : 0.0;
-            if (qwerty.d[2*i] < 0)
-                middle2[i][i1] = 0.0;
-            else
-                middle2[i][i1] = (i == i1) ? sqrt(qwerty.d[2*i]) : 0.0;
+//            if (qwerty.d[2*i] < 0)
+//                middle2[i][i1] = 0.0;
+//            else
+//                middle2[i][i1] = (i == i1) ? sqrt(qwerty.d[2*i]) : 0.0;
             last[i1][i] = conj(first[i][i1]);
         }
         if (isOutputNeeded)
@@ -511,7 +511,7 @@ void Trans_Hk(Comp S[N_LAT][N_LAT][N_Band][N_Band], Comp H[N_LAT][N_LAT][N_Band]
         for (int i1 = 0; i1 < N_LAT * N_Band; i1++) {
             Comp result = 0.0;
             for (int j = 0; j < N_LAT * N_Band; j++) {
-                result += middle2[i][j] * last[j][i1];
+                result += middle[i][j] * last[j][i1];
             }
             temp_matr[i][i1] = result;
         }
@@ -527,29 +527,29 @@ void Trans_Hk(Comp S[N_LAT][N_LAT][N_Band][N_Band], Comp H[N_LAT][N_LAT][N_Band]
         }
     }
 
-    for (int i = 0; i < N_LAT; i++) {
-        for (int k = 0; k < N_LAT; k++) {
-            for (int i1 = 0; i1 < N_Band; i1++) {
-                for (int k1 = 0; k1 < N_Band; k1++) {
-                    SS[i][k][i1][k1] = middle[i*N_Band + i1][k*N_Band + k1];
-                    Comp result = 0.0;
-                    for (int j = 0; j < N_LAT; j++) {
-                        for (int j1 = 0; j1 < N_Band; j1++) {
-                            result += middle[i*N_Band + i1][j*N_Band + j1] * middle[j*N_Band + j1][k*N_Band + k1];
-                        }
-                    }
-                    if(abs(real(S[i][k][i1][k1] - result)) > 0.01*abs(real(S[i][k][i1][k1]))/*)//*/ && real(S[i][k][i1][k1]) != 0.0)
-                        cout << i << " " << k << " " << i1 << " " << k1 << " " <<
-                                abs(real(S[i][k][i1][k1] - result)) << '\t' << abs(0.01*real(S[i][k][i1][k1])) << '\n';
-//                                real(result) << "  " << imag(result) << '\n';
-                    if(abs(imag(S[i][k][i1][k1] - result)) > abs(0.01*imag(S[i][k][i1][k1]))/*)//*/ && imag(S[i][k][i1][k1]) != 0.0)
-                        cout << i << " " << k << " " << i1 << " " << k1 << " " <<
-                                abs(imag(S[i][k][i1][k1] - result)) << '\t' << abs(0.01*imag(S[i][k][i1][k1])) << '\n';
-//                                real(result) << "  " << imag(result) << '\n';
-                }
-            }
-        }
-    }
+//    for (int i = 0; i < N_LAT; i++) {
+//        for (int k = 0; k < N_LAT; k++) {
+//            for (int i1 = 0; i1 < N_Band; i1++) {
+//                for (int k1 = 0; k1 < N_Band; k1++) {
+//                    SS[i][k][i1][k1] = middle[i*N_Band + i1][k*N_Band + k1];
+////                    Comp result = 0.0;
+////                    for (int j = 0; j < N_LAT; j++) {
+////                        for (int j1 = 0; j1 < N_Band; j1++) {
+////                            result += middle[i*N_Band + i1][j*N_Band + j1] * middle[j*N_Band + j1][k*N_Band + k1];
+////                        }
+////                    }
+////                    if(abs(real(S[i][k][i1][k1] - result)) > 0.01*abs(real(S[i][k][i1][k1]))/*)//*/ && real(S[i][k][i1][k1]) != 0.0)
+////                        cout << i << " " << k << " " << i1 << " " << k1 << " " <<
+////                                abs(real(S[i][k][i1][k1] - result)) << '\t' << abs(0.01*real(S[i][k][i1][k1])) << '\n';
+//////                                real(result) << "  " << imag(result) << '\n';
+////                    if(abs(imag(S[i][k][i1][k1] - result)) > abs(0.01*imag(S[i][k][i1][k1]))/*)//*/ && imag(S[i][k][i1][k1]) != 0.0)
+////                        cout << i << " " << k << " " << i1 << " " << k1 << " " <<
+////                                abs(imag(S[i][k][i1][k1] - result)) << '\t' << abs(0.01*imag(S[i][k][i1][k1])) << '\n';
+//////                                real(result) << "  " << imag(result) << '\n';
+//                }
+//            }
+//        }
+//    }
 
 //    checkIfMatrixIsHermitian(SS, 0.01);
     checkIfMatrixIsHermitian(S, 0.01);
