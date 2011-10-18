@@ -17,19 +17,20 @@ void Lab::runCalculation() {
     //�������� ������ �� ���� ��� �������������� ��������
     allocate();
     //������������� ���������� ����� � ������
-    Set_coord(r);
-
+    Set_coord(R);
+    UnitCell* cell = new UnitCell(N_LAT, DIMENSION);
+    cell->setTranslationVectors(translationVectors);
+    cell->setAtomPositionsInCell(R);
     Scat_Pr(ni0, mm0, Pm, Cl);
     //��� ������� ���� �� �������������
     Read_input_file(ni0, mm0, nm_1, mm_1);
     //�������� ����������� ��������� (39,39)
     Read_Coulomb_integral(U_matr);
     Hop_integrals* hopIntegral = new Hop_integrals(matrixInputFile, impurityInputFile);
-    hamiltonian->Calculate_Hamiltonian(hopIntegral);
-    return;
-    Calculate_Wamiltonian(hopIntegral->getMatrixPWF(), hopIntegral->getImpurityPWF());
+    hamiltonian->Calculate_Hamiltonian(hopIntegral, cell);
+//    Calculate_Wamiltonian(hopIntegral->getMatrixPWF(), hopIntegral->getImpurityPWF());
 
-    //    return 0;
+//        return;
     ofstream f_tot_start[2], f_tot;
     if (calculateGreen == true) {
         Doub ni_E[100] = {0};
@@ -98,7 +99,7 @@ void Lab::runCalculation() {
                             Doub (*g_comp)[8] = new Doub[2][8];
                             Doub dE = (En_E - En_S) / N_En;
                             Doub E = En_S + dE*niE;
-                            for (int spin = 0; spin < 2; spin++) {
+                            for (int spin = 0; spin < 1; spin++) {
                                 ee[niE] = E;
                                 // ������� ����������� ��������� (32,51)
                                 double CP_ratio = 0;
@@ -110,8 +111,66 @@ void Lab::runCalculation() {
                                 for (int num = 0; num < 8; num++)
                                     g_comp[spin][num] = 0.0;
 
-                                Density(Gs, g_coh, g_cpa[spin], g_comp[spin], gsm, gs_m, niE, spin, E, W, vm,
-                                        Pm, Cl, Eps, H_k, Coh_p[niE], r);
+//                                Density(Gs, g_coh, g_cpa[spin], g_comp[spin], gsm, gs_m, niE, spin, E, W, vm,
+//                                        Pm, Cl, Eps, H_k, Coh_p[niE], r);
+                                Comp (*I1)[N_LAT][N_Band][N_Band] = new Comp[N_LAT][N_LAT][N_Band][N_Band];
+                                Comp (*C_P)[N_LAT][N_Band][N_Band] = new Comp[N_LAT][N_LAT][N_Band][N_Band];
+                                Comp (*H_k_tem)[N_LAT * N_Band] = new Comp[N_LAT * N_Band][N_LAT * N_Band];
+                                Comp (*G_k_tem)[N_LAT * N_Band] = new Comp[N_LAT * N_Band][N_LAT * N_Band];
+
+                                for (int i = 0; i < N_LAT; i++) {
+                                    for (int i1 = 0; i1 < N_LAT; i1++) {
+                                        for (int j = 0; j < N_Band; j++) {
+                                            for (int j1 = 0; j1 < N_Band; j1++) {
+                                                I1[i][i1][j][j1] = (i == i1 && j == j1) ? 1.0 : 0.0;
+                                                C_P[i][i1][j][j1] = I1[i][i1][j][j1] * Comp(0.0, -0.01);
+                                            }
+                                        }
+                                    }
+                                }
+
+                                for (int k1 = -Nkp; k1 < Nkp + 1; k1++) {
+                                    for (int k2 = -Nkp; k2 < Nkp + 1; k2++) {
+                                        Doub kx = static_cast<Doub> (k1) / (2.0 * Nkp);
+                                        Doub ky = static_cast<Doub> (k2) / (2.0 * Nkp);
+                                        Doub ro_loc = 1;
+                                        for (int i = 0; i < N_LAT; i++) {
+                                            for (int i1 = 0; i1 < N_LAT; i1++) {
+                                                for (int j = 0; j < N_Band; j++) {
+                                                    for (int j1 = 0; j1 < N_Band; j1++) {
+                                                        H_k_tem[i * N_Band + j][i1 * N_Band + j1] = E * I1[i][i1][j][j1] -
+                                                                (C_P[i][i1][j][j1] + hamiltonian->H_k[k1 + Nkp][k2 + Nkp][i][i1][j][j1]);
+                                                    }
+                                                }
+                                            }
+                                        }
+                                        cd_Invert(H_k_tem, G_k_tem);
+                                        for (int i1 = 0; i1 < N_LAT; i1++) {
+                                            for (int i2 = 0; i2 < N_LAT; i2++) {
+                                                for (int j1 = 0; j1 < N_Band; j1++) {
+                                                    for (int j2 = 0; j2 < N_Band; j2++) {
+                                                        Comp p = CI * (kx * (cell->getExpPositions(cell->zeroCell, i1, 0) - cell->getExpPositions(cell->zeroCell, i2, 0)) +
+                                                                       ky * (cell->getExpPositions(cell->zeroCell, i1, 1) - cell->getExpPositions(cell->zeroCell, i2, 1)));
+                                                        Gs[niE][0][0][i1][i2][j1][j2] += G_k_tem[i1 * N_Band + j1][i2 * N_Band + j2] * ro_loc * exp(p) / static_cast<Doub> (Nkp2 * Nkp2);
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+
+                                for (int i = 0; i < N_LAT; i++) {
+                                    g_coh[i] = 0.0;
+                                    for (int j = 0; j < N_Band; j++) {
+                                        g_coh[i] -= imag(Gs[niE][0][0][i][i][j][j])/Pi;
+                                    }
+                                }
+
+                                delete[] I1;
+                                delete[] C_P;
+                                delete[] H_k_tem;
+                                delete[] G_k_tem;
+
                                 g_pkp[niE][spin] = 0.0;
                                 g[niE][spin] = 0.0;
                                 for (int i1 = 0; i1 < N_LAT; i1++) {
@@ -142,15 +201,15 @@ void Lab::runCalculation() {
                                     g[niE][spin] = 0.0;
                                 }
                             }
-                            f_tot.open("Rezults/density.dat", ios::app);
-                            f_tot << E - Esmr << '\t' << g_pkp[niE][0] + g_pkp[niE][1] << '\t' << g[niE][0] + g[niE][1] <<
+                            f_tot.open("/home/veal/Sandbox/GUINano/Rezults/density.dat", ios::app);
+                            f_tot << E - Esmr << '\t' << g_pkp[niE][0] /*+ g_pkp[niE][1]*/ << '\t' << g[niE][0] + g[niE][1] << ////!!!!!!!!!!!!!!!!!!!REMOVE
                                     '\t' << l_CPA << '\n';
                             if (niE == N_En - 1) {
                                 f_tot << "END OF ITERATION...   " << imm << "   " << nEps << '\n';
                             }
                             f_tot.close();
-                            f_tot_start[0].open("Rezults/g-.dat", ios::app);
-                            f_tot_start[1].open("Rezults/g+.dat", ios::app);
+                            f_tot_start[0].open("/home/veal/Sandbox/GUINano/Rezults/g-.dat", ios::app);
+                            f_tot_start[1].open("/home/veal/Sandbox/GUINano/Rezults/g+.dat", ios::app);
                             for (int spin = 0; spin < 2; spin++) {
                                 f_tot_start[spin] << E - Esmr << '\t' <<
                                         g_comp[spin][0] + g_comp[spin][1] << '\t' <<
@@ -222,6 +281,7 @@ void Lab::runCalculation() {
                             delete [] g_cpa;
                             delete [] g_comp;
                         }
+                        return;
                         for (int i1 = 0; i1 < N_LAT; i1++) {
                             for (int j = 0; j < N_Com; j++) {
                                 for (int m = 0; m < 2; m++) {
@@ -251,8 +311,8 @@ void Lab::runCalculation() {
                         delete [] gs_m_1;
                         delete [] gsm_2;
                         delete [] gs_m_2;
-                        ofstream file_out_mm("Rezults/mm.dat", ios::app);
-                        ofstream file_out_nm("Rezults/nm.dat", ios::app);
+                        ofstream file_out_mm("/home/veal/Sandbox/GUINano/Rezults/mm.dat", ios::app);
+                        ofstream file_out_nm("/home/veal/Sandbox/GUINano/Rezults/nm.dat", ios::app);
                         Doub nm_tot1 = 0;
                         for (int i1 = 0; i1 < N_LAT; i1++) {
                             for (int j = 0; j < N_Com; j++) {
@@ -279,14 +339,14 @@ void Lab::runCalculation() {
                 }
                 delete [] nm;
                 delete [] mm;
-                ofstream file_out_En("Rezults/free_energy.dat", ios::app);
+                ofstream file_out_En("/home/veal/Sandbox/GUINano/Rezults/free_energy.dat", ios::app);
                 file_out_En << Eps << "    " << free_energy << '\n';
                 file_out_En.close();
                 ofstream file_out;
-                file_out.open("Rezults/Green.dat", ios::binary);
+                file_out.open("/home/veal/Sandbox/GUINano/Rezults/Green.dat", ios::binary);
                 file_out.write((char*) Gs, N_En * 9 * N_LAT * N_LAT * N_Band * N_Band * sizeof (complex<Doub>));
                 file_out.close();
-                file_out.open("Rezults/Coh_pot+.dat"/*, ios::binary*/);
+                file_out.open("/home/veal/Sandbox/GUINano/Rezults/Coh_pot+.dat"/*, ios::binary*/);
                 for (int eee = 0; eee < N_En; eee++) {
                     for (int nl = 0; nl < N_LAT; nl++) {
                         for (int nlsh = 0; nlsh < N_LAT; nlsh++) {
@@ -300,7 +360,7 @@ void Lab::runCalculation() {
                 }
                 //				file_out.write((char*)Coh_p, N_En*2*N_LAT*N_Band*N_Band*sizeof(complex<Doub>));
                 file_out.close();
-                file_out.open("Rezults/Coh_pot-.dat"/*ios::binary*/);
+                file_out.open("/home/veal/Sandbox/GUINano/Rezults/Coh_pot-.dat"/*ios::binary*/);
                 for (int eee = 0; eee < N_En; eee++) {
                     for (int nl = 0; nl < N_LAT; nl++) {
                         for (int nlsh = 0; nlsh < N_LAT; nlsh++) {
@@ -314,10 +374,10 @@ void Lab::runCalculation() {
                 }
                 //				file_out.write((char*)Coh_p, N_En*2*N_LAT*N_Band*N_Band*sizeof(complex<Doub>));
                 file_out.close();
-                file_out.open("Rezults/nm.bin", ios::binary);
+                file_out.open("/home/veal/Sandbox/GUINano/Rezults/nm.bin", ios::binary);
                 file_out.write((char*) nm_1, 2 * N_Com * N_LAT * N_Band * sizeof (complex<Doub>));
                 file_out.close();
-                file_out.open("Rezults/mm.bin", ios::binary);
+                file_out.open("/home/veal/Sandbox/GUINano/Rezults/mm.bin", ios::binary);
                 file_out.write((char*) mm_1, 2 * N_Com * N_LAT * N_Band * sizeof (complex<Doub>));
                 file_out.close();
             }
@@ -448,8 +508,7 @@ void Lab::runCalculation() {
     //				cout << "Conductivity calculated";
     //			}
     //		}
-
-    delete [] H_k;
+    delete hamiltonian;
     delete [] H_Difr;
     delete [] Gs;
     delete [] Sig_ef_e;

@@ -13,7 +13,6 @@ TEMPLATE = app
 SOURCES += main.cpp\
         mainwindow.cpp \
     W_matrix.cpp \
-    Wamiltonian.cpp \
     Speed.cpp \
     sigma_fe.cpp \
     reading_from_files.cpp \
@@ -33,7 +32,8 @@ SOURCES += main.cpp\
     controller.cpp \
     labcontroller.cpp \
     task.cpp \
-    ctemp.cpp
+    ctemp.cpp \
+    unitcell.cpp
 
 HEADERS  += mainwindow.h \
     W_matrix.h \
@@ -53,6 +53,7 @@ HEADERS  += mainwindow.h \
     ctemp.h \
     Hamiltonian.h \
     initclass.h \
-    GlobalConstVar.h
+    GlobalConstVar.h \
+    unitcell.h
 
 FORMS    += mainwindow.ui

@@ -1,10 +1,3 @@
-/* 
- * File:   Potential.cpp
- * Author: veal
- * 
- * Created on April 19, 2011, 1:28 AM
- */
-
 #include "PWF.h"
 
 PWF::PWF(double* potential, double* wf0, double* wf1, double* wf2, double* wf3,

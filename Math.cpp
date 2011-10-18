@@ -1,6 +1,7 @@
 #include "sys_param.h"
 #include "eigen_sym.h"
 #include "LUcomplex.h"
+
 void cd_Invert(const Comp a[N_LAT*N_Band][N_LAT*N_Band], Comp aa[N_LAT*N_Band][N_LAT*N_Band])
 {
     NRmatrix<Comp> temp(N_LAT*N_Band, N_LAT*N_Band);
@@ -419,22 +420,14 @@ void matinv3(Comp B[N_Alpha][N_Alpha],Comp res[N_Alpha][N_Alpha])
 	}
 	delete [] A;
 }
-void Trans_Hk(Comp S[N_LAT][N_LAT][N_Band][N_Band], Comp H[N_LAT][N_LAT][N_Band][N_Band],
+void Trans_Hk(int x, int y,Comp S[N_LAT][N_LAT][N_Band][N_Band], Comp H[N_LAT][N_LAT][N_Band][N_Band],
 			  Comp H1[N_LAT][N_LAT][N_Band][N_Band], bool isOutputNeeded) {
-
-    for (int i = 0; i < N_LAT; i++) {
-        for (int j = 0; j < N_LAT; j++) {
-            for (int i1 = 0; i1 < N_Band; i1++) {
-                for (int j1 = 0; j1 < N_Band; j1++) {
-                    S[j][i][j1][i1] = conj(S[i][j][i1][j1]);
-                    H[j][i][j1][i1] = conj(H[i][j][i1][j1]);
-                }
-            }
-        }
-    }
 
     MatDoub temp(2 * N_LAT * N_Band, 2 * N_LAT * N_Band);
     Comp (*hamilt)[N_LAT*N_Band] = new Comp[N_LAT*N_Band][N_LAT*N_Band];
+
+    checkIfMatrixIsHermitian(S, 0.01);
+    checkIfMatrixIsHermitian(H, 0.01);
 
     for (int i = 0; i < N_LAT; i++) {
         for (int j = 0; j < N_LAT; j++) {
@@ -442,8 +435,6 @@ void Trans_Hk(Comp S[N_LAT][N_LAT][N_Band][N_Band], Comp H[N_LAT][N_LAT][N_Band]
                 for (int j1 = 0; j1 < N_Band; j1++) {
                     temp[i * N_Band + i1][j * N_Band + j1] = real(S[i][j][i1][j1]);
                     hamilt[i * N_Band + i1][j * N_Band + j1] = H[i][j][i1][j1];
-//                    if (conj(H[i][j][i1][j1]) != H[j][i][j1][i1])
-//                        cout << i * N_Band + i1 << "  " << j * N_Band + j1 << '\n';
                 }
             }
         }
@@ -489,15 +480,12 @@ void Trans_Hk(Comp S[N_LAT][N_LAT][N_Band][N_Band], Comp H[N_LAT][N_LAT][N_Band]
 
     ofstream file("/home/veal/Sandbox/GUINano/Rezults/S_k.dat", ios::app);
     file.precision(5);
-
+    if (isOutputNeeded)
+        file << x << '\t' << y << '\t';
     for (int i = 0; i < N_LAT * N_Band; i++) {
         for (int i1 = 0; i1 < N_LAT * N_Band; i1++) {
             first[i][i1] = Comp(qwerty.z[i][2*i1], qwerty.z[N_LAT*N_Band+i][2*i1]);
             middle[i][i1] = (i == i1) ? Comp(1.0, 0.0)/sqrt(Comp(qwerty.d[2*i], 0.0)) : 0.0;
-//            if (qwerty.d[2*i] < 0)
-//                middle2[i][i1] = 0.0;
-//            else
-//                middle2[i][i1] = (i == i1) ? sqrt(qwerty.d[2*i]) : 0.0;
             last[i1][i] = conj(first[i][i1]);
         }
         if (isOutputNeeded)
@@ -526,33 +514,6 @@ void Trans_Hk(Comp S[N_LAT][N_LAT][N_Band][N_Band], Comp H[N_LAT][N_LAT][N_Band]
             middle[i][i1] = result;
         }
     }
-
-//    for (int i = 0; i < N_LAT; i++) {
-//        for (int k = 0; k < N_LAT; k++) {
-//            for (int i1 = 0; i1 < N_Band; i1++) {
-//                for (int k1 = 0; k1 < N_Band; k1++) {
-//                    SS[i][k][i1][k1] = middle[i*N_Band + i1][k*N_Band + k1];
-////                    Comp result = 0.0;
-////                    for (int j = 0; j < N_LAT; j++) {
-////                        for (int j1 = 0; j1 < N_Band; j1++) {
-////                            result += middle[i*N_Band + i1][j*N_Band + j1] * middle[j*N_Band + j1][k*N_Band + k1];
-////                        }
-////                    }
-////                    if(abs(real(S[i][k][i1][k1] - result)) > 0.01*abs(real(S[i][k][i1][k1]))/*)//*/ && real(S[i][k][i1][k1]) != 0.0)
-////                        cout << i << " " << k << " " << i1 << " " << k1 << " " <<
-////                                abs(real(S[i][k][i1][k1] - result)) << '\t' << abs(0.01*real(S[i][k][i1][k1])) << '\n';
-//////                                real(result) << "  " << imag(result) << '\n';
-////                    if(abs(imag(S[i][k][i1][k1] - result)) > abs(0.01*imag(S[i][k][i1][k1]))/*)//*/ && imag(S[i][k][i1][k1]) != 0.0)
-////                        cout << i << " " << k << " " << i1 << " " << k1 << " " <<
-////                                abs(imag(S[i][k][i1][k1] - result)) << '\t' << abs(0.01*imag(S[i][k][i1][k1])) << '\n';
-//////                                real(result) << "  " << imag(result) << '\n';
-//                }
-//            }
-//        }
-//    }
-
-//    checkIfMatrixIsHermitian(SS, 0.01);
-    checkIfMatrixIsHermitian(S, 0.01);
 
 //    (S-1/2) matrix complete
 
@@ -596,7 +557,7 @@ void Trans_Hk(Comp S[N_LAT][N_LAT][N_Band][N_Band], Comp H[N_LAT][N_LAT][N_Band]
     delete hamilt;
     delete SS;
 
-//    checkIfMatrixIsHermitian(H1, 0.01);
+    checkIfMatrixIsHermitian(H1, 0.01);
 
 //	Comp (*X_tem)[N_LAT*N_Band] = new Comp[N_LAT*N_Band][N_LAT*N_Band];
 //	Comp (*H_tem)[N_LAT*N_Band] = new Comp[N_LAT*N_Band][N_LAT*N_Band];
@@ -645,7 +606,7 @@ void Trans_Hk(Comp S[N_LAT][N_LAT][N_Band][N_Band], Comp H[N_LAT][N_LAT][N_Band]
 	
 }
 
-void Eigen_values(Comp S[N_LAT][N_LAT][N_Band][N_Band], double* Eigen_val, bool isOutputNeeded) {
+void Eigen_values(int x, int y, Comp S[N_LAT][N_LAT][N_Band][N_Band], double* Eigen_val, bool isOutputNeeded) {
 
     MatDoub temp(2 * N_LAT * N_Band, 2 * N_LAT * N_Band);
 
@@ -691,8 +652,10 @@ void Eigen_values(Comp S[N_LAT][N_LAT][N_Band][N_Band], double* Eigen_val, bool 
 
     Symmeig qwerty(temp);
 
-    ofstream file("Rezults/Matrix_values.dat", ios::app);
+    ofstream file("/home/veal/Sandbox/GUINano/Rezults/Matrix_values.dat", ios::app);
     file.precision(5);
+    if (isOutputNeeded)
+        file << x << '\t' << y << '\t';
 
     for (int i = 0; i < N_LAT * N_Band; i++) {
         if (Eigen_val != NULL)
@@ -768,25 +731,23 @@ void checkIfMatrixIsHermitian(Comp A[N_LAT][N_LAT][N_Band][N_Band], Doub ACCURAC
                 for (int j1 = 0; j1 < N_Band; j1++) {
                     if (abs(real(A[i][j][i1][j1]) - real(A[j][i][j1][i1])) > ACCURACY*abs(real(A[i][j][i1][j1])) &&
                         (i != j || i1 != j1)) {
-                        if(abs(A[i][j][i1][j1]) > 10e-10) {
+                        if(abs(real(A[i][j][i1][j1])) > 10e-10) {
                             cout << "Matrix is not Hermitian" << '\n';
                             exit(-1);
                         } else {
-                            A[i][j][i1][j1] = 0.0;
+                            A[i][j][i1][j1] = Comp(0.0, imag(A[i][j][i1][j1]));
                         }
                     }
                     if (abs(imag(A[i][j][i1][j1]) + imag(A[j][i][j1][i1])) > ACCURACY*abs(imag(A[i][j][i1][j1])) &&
                         (i != j || i1 != j1)) {
-                        if(abs(A[i][j][i1][j1]) > 10e-10) {
+                        if(abs(imag(A[i][j][i1][j1])) > 10e-10) {
                             cout << "Matrix is not Hermitian" << '\n';
                             exit(-1);
                         } else {
-                            A[i][j][i1][j1] = 0.0;
+                            A[i][j][i1][j1] = Comp(real(A[i][j][i1][j1]), 0.0);
                         }
-                    } else {
-                        A[i][j][i1][j1] = conj(A[j][i][j1][i1]);
                     }
-
+                    A[j][i][j1][i1] = conj(A[i][j][i1][j1]);
                 }
             }
         }

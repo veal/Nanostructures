@@ -1,7 +1,6 @@
 #ifndef W_MATRIX_H
 #define	W_MATRIX_H
 
-#include "sys_param.h"
 #include "PWF.h"
 
 class W_matrix {
@@ -46,6 +45,10 @@ public:
     PWF* getMatrixPWF() const {
         return _matrixPWF;
     }
+    void F_Wk(Doub kx, Comp H[N_LAT][N_LAT][N_LAT][N_Band][N_Band], Doub r[N_LAT][3][3]);
+    void Wk(int Nkp, Comp Wr[N_Com][N_LAT][N_LAT][N_LAT][N_Band][N_Band],
+            Comp S_k[Nkp2][N_LAT][N_LAT][N_Band][N_Band], Doub r[N_LAT][3][3], PWF* _matrixPWF, PWF* _impurityPWF);
+    void Calculate_Wamiltonian(PWF* _matrixPWF, PWF* _impurityPWF);
 
 
 private:

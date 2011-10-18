@@ -2,22 +2,16 @@
 #define	SYS_PARAMS_H
 
 #include "nr3.h"
-#include "PWF.h"
 
-#include <stdio.h>
 #include <pthread.h>
-#include <fstream>
-#include <string>
-#include <iostream>
-#include <complex>
 
-#include "W_matrix.h"
 
 class Hop_integrals;
 typedef complex<Doub> Comp;
 using namespace std;
-const int N_LAT=12, N_Band=10, N_Com = 2, N_En_Pr = 74, Nkp = 200, Nkp2 = 400, MAX_IT = 400, N_En = 200, N_point = 3, N_Alpha = 3, n_Cores = 6;
+const int N_LAT=3, N_Band=10, N_Com = 2, N_En_Pr = 74, Nkp = 20, Nkp2 = 41, MAX_IT = 400, N_En = 2000, N_point = 3, N_Alpha = 3, n_Cores = 6;
 const Doub EPS_CP = 1e-3;
+const int DIMENSION = 2;
 extern Comp CI;
 const Doub Pi = 3.14;
 extern Doub l_CPA;
@@ -25,6 +19,8 @@ extern Doub l_CPA;
 const bool VERBOSE = false;
 
 extern Doub (*r)[3][3];
+extern Doub* R;
+extern Doub* translationVectors;
 extern Doub (*nm_1)[N_Com][N_LAT][N_Band];
 extern Doub (*mm_1)[N_Com][N_LAT][N_Band];
 extern Doub (*ni0)[4];
@@ -36,8 +32,6 @@ extern Comp (*sigmam)[N_LAT][2][N_Band];
 extern Comp (*sigma_m)[N_LAT][2][N_Band];
 extern Comp (*sigma_coh)[N_LAT];
 extern Comp (*sigma_comp)[18];
-extern Comp (*H_k)[N_LAT][N_LAT][N_Band][N_Band];
-extern Comp (*S_k)[N_LAT][N_LAT][N_Band][N_Band];
 extern Comp (*D_k)[N_LAT][N_LAT][N_Alpha][N_Alpha];
 extern Comp (*H_Difr)[3][N_LAT][N_LAT][N_Band][N_Band];
 extern Comp (*Gs)[3][3][N_LAT][N_LAT][N_Band][N_Band];
@@ -73,7 +67,7 @@ extern pthread_mutex_t job_queue;
 void CP_Calculation(Comp Coh_p[N_LAT][N_LAT][N_Band][N_Band], Doub E, int niE, Comp W[N_Com][N_LAT][N_LAT][N_LAT][N_Band][N_Band],
         Doub vm[2][N_Com][N_LAT][2][N_Band], Doub Pm[2][N_LAT], Doub Cl[N_Com][N_LAT],
         Comp Hr[Nkp2][N_LAT][N_LAT][N_Band][N_Band], Doub r[N_LAT][3][3], int spin, double *f2);
-void Eigen_values(Comp S[N_LAT][N_LAT][N_Band][N_Band], double*,  bool isOutputNeeded);
+void Eigen_values(int x, int y, Comp S[N_LAT][N_LAT][N_Band][N_Band], double*,  bool isOutputNeeded);
 void matmul(Comp A[N_LAT*N_Band][N_LAT*N_Band], Comp B[N_LAT*N_Band][N_LAT*N_Band],
 			Comp res[N_LAT*N_Band][N_LAT*N_Band]);
 void matmul3(Comp A[N_Alpha][N_Alpha], Comp B[N_Alpha][N_Alpha], Comp res[N_Alpha][N_Alpha]);
@@ -84,13 +78,12 @@ void matinv(Comp B[N_LAT*N_Band][N_LAT*N_Band],Comp res[N_LAT*N_Band][N_LAT*N_Ba
 void matinv36(Comp B[N_LAT*N_Alpha][N_LAT*N_Alpha],Comp res[N_LAT*N_Alpha][N_LAT*N_Alpha]);
 void matinv4(Comp B[N_Band][N_Band],Comp res[N_Band][N_Band]);
 void matinv3(Comp B[N_Alpha][N_Alpha],Comp res[N_Alpha][N_Alpha]);
-void Trans_Hk(Comp S[N_LAT][N_LAT][N_Band][N_Band], Comp H[N_LAT][N_LAT][N_Band][N_Band],
+void Trans_Hk(int kx, int ky, Comp S[N_LAT][N_LAT][N_Band][N_Band], Comp H[N_LAT][N_LAT][N_Band][N_Band],
 			  Comp H1[N_LAT][N_LAT][N_Band][N_Band], bool);
 void checkIfMatrixIsHermitian(Comp[N_LAT][N_LAT][N_Band][N_Band], Doub ACCURACY);
 void G_phonon(Comp G_p[N_LAT][N_LAT][N_Alpha][N_Alpha],Comp D_k[Nkp2][N_LAT][N_LAT][N_Alpha][N_Alpha], Doub E_r,
 			  Comp Coh_p[N_LAT][N_Alpha][N_Alpha], Doub r[N_LAT][3][3]);
 Doub dI(Doub y_2, Doub y_1, Doub y, Doub h);
-void Calculate_Wamiltonian(PWF*, PWF*);
 struct parameters
 {
 	int num;
@@ -126,7 +119,7 @@ void* CalculateGreen( void* );
 void* CalculateGreenFull( void* );
 void* Sigma_fe_thread( void* );
 void Speed(Doub kx, Doub V_p[N_Com][N_En_Pr], Comp H[N_LAT][N_LAT][N_Band][N_Band], Doub r[N_LAT][3][3]);
-void Set_coord(Doub[N_LAT][3][3]);
+void Set_coord(Doub*);
 
 void Read_Energy_Integrals(Doub W[N_Com][N_En_Pr], Doub V[N_Com][N_En_Pr], Doub S[N_Com][N_En_Pr]);
 void Read_Coulomb_integral(Doub U_matr[N_Band]);

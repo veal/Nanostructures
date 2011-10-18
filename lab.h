@@ -3,6 +3,7 @@
 
 #include <QString>
 #include <QRunnable>
+#include "unitcell.h"
 #include "Hop_integrals.h"
 #include "Hamiltonian.h"
 #include "controller.h"

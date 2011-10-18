@@ -3,11 +3,6 @@
 
 #include <QFile>
 #include <QTextStream>
-#include <stdio.h>
-#include <fstream>
-#include <string>
-#include <iostream>
-#include <complex>
 #include "PWF.h"
 
 class Hop_integrals {

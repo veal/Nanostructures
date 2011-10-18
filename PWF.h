@@ -1,14 +1,7 @@
-/* 
- * File:   Potential.h
- * Author: veal
- *
- * Created on April 19, 2011, 1:28 AM
- */
-#include "sys_param.h"
-//#include <assert.h>
 #ifndef PWF_H
 #define	PWF_H
 
+#include "sys_param.h"
 class PWF {
 public:
     PWF(double* potential, double* wf1, double* wf2, double* wf3, double* wf4,
