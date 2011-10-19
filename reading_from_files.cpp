@@ -8,9 +8,9 @@ void Set_coord(Doub* r) {
     r[4] = 0.0;
     r[5] = 0.0;
 
-    r[6] = 0.5;
-    r[7] = -0.866;
-    r[8] = 0.3;
+//    r[6] = 0.5;
+//    r[7] = -0.866;
+//    r[8] = 0.3;
 
     translationVectors[0] = 1.5;
     translationVectors[1] = 0.866;
