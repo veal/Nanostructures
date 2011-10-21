@@ -9,7 +9,7 @@
 class Hop_integrals;
 typedef complex<Doub> Comp;
 using namespace std;
-const int N_LAT=3, N_Band=10, N_Com = 2, N_En_Pr = 74, Nkp = 20, Nkp2 = 41, MAX_IT = 400, N_En = 2000, N_point = 3, N_Alpha = 3, n_Cores = 6;
+const int N_LAT=3, N_Band=10, N_Com = 2, N_En_Pr = 74, Nkp = 20, Nkp2 = 41, MAX_IT = 400, N_En = 200, N_point = 3, N_Alpha = 3, n_Cores = 6;
 const Doub EPS_CP = 1e-3;
 const int DIMENSION = 2;
 extern Comp CI;

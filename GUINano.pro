@@ -33,7 +33,8 @@ SOURCES += main.cpp\
     labcontroller.cpp \
     task.cpp \
     ctemp.cpp \
-    unitcell.cpp
+    unitcell.cpp \
+    wamiltonian.cpp
 
 HEADERS  += mainwindow.h \
     W_matrix.h \
@@ -54,6 +55,7 @@ HEADERS  += mainwindow.h \
     Hamiltonian.h \
     initclass.h \
     GlobalConstVar.h \
-    unitcell.h
+    unitcell.h \
+    wamiltonian.h
 
 FORMS    += mainwindow.ui

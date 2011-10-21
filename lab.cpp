@@ -2,6 +2,7 @@
 
 Lab::Lab(){
     hamiltonian = new Hamiltonian();
+    wamiltonian = new Wamiltonian();
 }
 void Lab::run() {
     runCalculation();
@@ -27,10 +28,11 @@ void Lab::runCalculation() {
     //�������� ����������� ��������� (39,39)
     Read_Coulomb_integral(U_matr);
     Hop_integrals* hopIntegral = new Hop_integrals(matrixInputFile, impurityInputFile);
+    W_matrix* wIntegral = new W_matrix(hopIntegral->getMatrixPWF(), hopIntegral->getImpurityPWF());
     hamiltonian->Calculate_Hamiltonian(hopIntegral, cell);
-//    Calculate_Wamiltonian(hopIntegral->getMatrixPWF(), hopIntegral->getImpurityPWF());
+    wamiltonian->Calculate_Wamiltonian(wIntegral, cell);
 
-//        return;
+    return;
     ofstream f_tot_start[2], f_tot;
     if (calculateGreen == true) {
         Doub ni_E[100] = {0};

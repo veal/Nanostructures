@@ -1,6 +1,8 @@
 #ifndef W_MATRIX_H
 #define	W_MATRIX_H
 
+#include <QFile>
+#include <QTextStream>
 #include "PWF.h"
 
 class W_matrix {
@@ -53,7 +55,8 @@ public:
 
 private:
     
-    string PARAM_FILE;
+    QString PARAM_FILE;
+    QString WF_FILE;
 
     PWF* _matrixPWF;
     PWF* _impurityPWF;

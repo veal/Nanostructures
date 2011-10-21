@@ -79,7 +79,6 @@ int Hop_integrals::calculateIntegrals(integralContainer *intCon, double distance
 
     anotherCoordSys(lclDistance);
 
-//    ofstream VSFile;
     QString str;
     QTextStream sstr(&str);
     sstr << WF_FILE << "V_S_container.dat";
@@ -94,8 +93,6 @@ int Hop_integrals::calculateIntegrals(integralContainer *intCon, double distance
 
     QTextStream in(&VSFile);
     in.setRealNumberNotation(QTextStream::ScientificNotation);
-
-//    VSFile.open("Rezults/V_S_container.dat", ios::app);
 
     in << "Computation result for " <<_matrixFilename << '\n';
     in << "Cut radius = " << _matrixParam->dr_max << "\tV\t" << "\tS\t"

@@ -310,8 +310,6 @@ void Hamiltonian::F_Hk(Doub kx, Doub ky, Comp H[N_LAT][N_LAT][N_Band][N_Band], U
 void Hamiltonian::Hop_int(int Nkp, UnitCell* cell, Hop_integrals* hopIntegral) {
     if (VERBOSE)
         cout << "Hop_int started.." << '\n';
-//    ofstream Ham_k_file("/home/veal/Sandbox/GUINano/Rezults/Ham.dat");
-//    ofstream HDif_k_file("/home/veal/Sandbox/GUINano/Rezults/HDif.dat");
     double* asdf = new double[N_LAT * N_Band];
 
     for (int k1 = -Nkp; k1 < Nkp + 1; k1++) {
@@ -341,14 +339,6 @@ void Hamiltonian::Hop_int(int Nkp, UnitCell* cell, Hop_integrals* hopIntegral) {
                         for (int j1 = 0; j1 < N_Band; j1++) {
                             H_k[k1 + Nkp][k2 + Nkp][i][j][i1][j1] = H[i][j][i1][j1];
                             S_k[k1 + Nkp][k2 + Nkp][i][j][i1][j1] = S[i][j][i1][j1];
-                            //                        if (abs(imag(H[i][j][i1][j1]) + imag(H[j][i][j1][i1])) > 0.01*abs(imag(H[i][j][i1][j1]))
-                            //                                && abs(real(H[i][j][i1][j1]) - real(H[j][i][j1][i1])) > 0.01*abs(real(H[i][j][i1][j1])))
-                            //                        {
-                            //                            cout << i << "  " << j << "  " << i1 << "  " << j1  << '\n';
-                            //                            cout << real(H[i][j][i1][j1]) << "  " << imag(H[i][j][i1][j1]) << '\n';
-                            //                            cout << real(H[j][i][j1][i1]) << "  " << imag(H[j][i][j1][i1]) << '\n';
-                            //                        }
-//                            Ham_k_file << i << '\t' << j << '\t' << i1 << '\t' << j1 << '\t' << real(H[i][j][i1][j1]) << '\t' << imag(H[i][j][i1][j1]) << '\n';
                         }
                     }
                 }
@@ -360,8 +350,7 @@ void Hamiltonian::Hop_int(int Nkp, UnitCell* cell, Hop_integrals* hopIntegral) {
         }
     }
     delete asdf;
-//    Ham_k_file.close();
-//    HDif_k_file.close();
+
     if (VERBOSE)
         cout << "Hop_int finished.." << '\n';
 }

@@ -6,6 +6,8 @@
 #include "unitcell.h"
 #include "Hop_integrals.h"
 #include "Hamiltonian.h"
+#include "wamiltonian.h"
+#include "W_matrix.h"
 #include "controller.h"
 
 class Lab : public QRunnable
@@ -26,6 +28,7 @@ private:
     QString matrixInputFile;
     QString impurityInputFile;
     Hamiltonian *hamiltonian;
+    Wamiltonian *wamiltonian;
     Hop_integrals hopIntegrals;
 };
 

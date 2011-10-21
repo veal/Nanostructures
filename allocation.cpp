@@ -76,8 +76,8 @@ void allocate() {
     calculateGreen = true;
     calculateSig_fe = false;
     calculate_nm_mm = true;
-    En_S = -20.0;
-    En_E = 15.0;
+    En_S = -4.0;
+    En_E = 0.0;
     Et = 0;
     Et_a = 0;
     gmi = 0;
